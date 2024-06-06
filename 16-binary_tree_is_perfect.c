@@ -71,13 +71,14 @@ int binary_tree_balance(const binary_tree_t *tree)
 
 int binary_tree_is_perfect(const binary_tree_t *tree)
 {
+	int left_height, right_height, left_count, right_count;
 	if (tree == NULL)
 		return (0);
 
-	int left_height = binary_tree_height_b(tree->left);
-	int right_height = binary_tree_height_b(tree->right);
-	int left_count = count(tree->left);
-	int right_count = count(tree->right);
+	left_height = binary_tree_height_b(tree->left);
+	right_height = binary_tree_height_b(tree->right);
+	left_count = count(tree->left);
+	right_count = count(tree->right);
 
 	if (left_height != right_height)
 		return (0);
