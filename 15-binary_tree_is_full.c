@@ -57,6 +57,8 @@ int binary_tree_is_full(const binary_tree_t *tree)
 		return (0);
 	h = binary_tree_height_b(tree);
 	n = count(tree);
+	if (h == 1)
+		return (1);
 	if (h * h == n + 1)
 		return (1);
 	return (0);
