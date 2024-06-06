@@ -8,7 +8,7 @@
 
 int count(const binary_tree_t *tree)
 {
-	int l, r;
+	int l = 0, r = 0;
 
 	if (tree == NULL)
 		return (0);
@@ -18,15 +18,15 @@ int count(const binary_tree_t *tree)
 }
 
 /**
- * binary_tree_height_c - measures the height of a binary tree
- * @tree: pointer to the root node of the tree to measure the height
- * Return: height of the tree
+ * binary_tree_height_b - Measures height of a binary tree for a bal tree
+ * @tree: tree to go through
+ * Return: the height
  */
 
-size_t binary_tree_height_c(const binary_tree_t *tree)
+int binary_tree_height_b(const binary_tree_t *tree)
 {
-	size_t l = 0;
-	size_t r = 0;
+	int l = 0;
+	int r = 0;
 
 	if (tree == NULL)
 	{
@@ -36,8 +36,8 @@ size_t binary_tree_height_c(const binary_tree_t *tree)
 	{
 		if (tree)
 		{
-			l = tree->left ? 1 + binary_tree_height_c(tree->left) : 0;
-			r = tree->right ? 1 + binary_tree_height_c(tree->right) : 0;
+			l = tree->left ? 1 + binary_tree_height_b(tree->left) : 1;
+			r = tree->right ? 1 + binary_tree_height_b(tree->right) : 1;
 		}
 		return ((l > r) ? l : r);
 	}
@@ -51,12 +51,13 @@ size_t binary_tree_height_c(const binary_tree_t *tree)
 
 int binary_tree_is_full(const binary_tree_t *tree)
 {
-	int h, n;
+	int h = 0, n = 0;
 
-	h = binary_tree_height_c(tree);
+	if (!tree)
+		return (0);
+	h = binary_tree_height_b(tree);
 	n = count(tree);
-
-	if (h * h == n - 1)
+	if (h * h == n + 1)
 		return (1);
 	return (0);
 }
