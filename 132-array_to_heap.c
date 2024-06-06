@@ -13,7 +13,8 @@ heap_t *array_to_heap(int *array, size_t size)
 	heap_t *heap;
 
 	heap = (heap_t *)binary_tree_node(NULL, array[0]);
-
+	if (!heap)
+		return (NULL);
 	for (i = 1; i < size; i++)
 	{
 		heap_insert(&heap, array[i]);
