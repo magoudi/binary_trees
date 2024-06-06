@@ -8,7 +8,7 @@
 
 int count(const binary_tree_t *tree)
 {
-	int l = 0, r = 0;
+	int l, r;
 
 	if (tree == NULL)
 		return (0);
@@ -25,9 +25,10 @@ int count(const binary_tree_t *tree)
 
 int binary_tree_height_b(const binary_tree_t *tree)
 {
-	int l = 0;
-	int r = 0;
+	int l, r;
 
+	l = 0;
+	r = 0;
 	if (tree == NULL)
 	{
 		return (0);
