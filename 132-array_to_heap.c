@@ -12,6 +12,8 @@ heap_t *array_to_heap(int *array, size_t size)
 	size_t i;
 	heap_t *heap;
 
+	if (!array || size == 0)
+		return (NULL);
 	heap = (heap_t *)binary_tree_node(NULL, array[0]);
 	if (!heap)
 		return (NULL);
