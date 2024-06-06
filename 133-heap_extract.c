@@ -118,4 +118,5 @@ int heap_extract(heap_t **root)
 		else
 			return (ret);
 	}
+	return (0);
 }

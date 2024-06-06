@@ -1,138 +1,148 @@
 #include "binary_trees.h"
 
 /**
- * max_size_t - finds larger of two size_t values
- * @a: first value to compare
- * @b: second value to compare
- * Return: larger size_t value, or value of both if equal
+ * height - measures the height of a tree
+ *
+ * @tree: tree root
+ * Return: height
  */
-size_t max_size_t(size_t a, size_t b)
+int height(const binary_tree_t *tree)
 {
-	return ((a > b) ? a : b);
+	int left = 0;
+	int right = 0;
+
+	if (tree == NULL)
+		return (-1);
+
+	left = height(tree->left);
+	right = height(tree->right);
+
+	if (left > right)
+		return (left + 1);
+
+	return (right + 1);
 }
 
 /**
- * binary_tree_height - measures the height of a binary tree
- * @tree: root node from which to measure, starting at 0
- * Return: levels from root, or 0 if `tree` is NULL
+ * binary_tree_is_perfect - checks if a binary tree is perfect
+ *
+ * @tree: tree root
+ * Return: 1 if tree is perfect, 0 otherwise
  */
-size_t binary_tree_height(const binary_tree_t *tree)
-{
-	if (!tree)
-		return (0);
-
-	return (1 + max_size_t(binary_tree_height(tree->left),
-			       binary_tree_height(tree->right)));
-}
-
-/**
- * binary_tree_nodes - counts the total nodes in a binary tree
- * @tree: root node from which to measure
- * Return: total non-leaf nodes at or below `tree`, or 0 if `tree` is NULL
- */
-size_t binary_tree_nodes(const binary_tree_t *tree)
-{
-	if (!tree)
-		return (0);
-
-	return (1 + binary_tree_nodes(tree->left) +
-		binary_tree_nodes(tree->right));
-}
-
-/**
-  * binary_tree_is_perfect - checks if a binary tree is perfect, meaning all
-  * nodes except for leaves have two children, and all leaves at same level
-  * @tree: root node below which to check
-  * Return: 1 if `tree` and all nodes below it each have 2 children, 0 if not
-  * or if `tree` is NULL
-  */
 int binary_tree_is_perfect(const binary_tree_t *tree)
 {
-	int height, i, pow2 = 1;
-	size_t total_nodes;
+	if (tree && height(tree->left) == height(tree->right))
+	{
+		if (height(tree->left) == -1)
+			return (1);
 
-	if (!tree)
-		return (0);
+		if ((tree->left && !((tree->left)->left) && !((tree->left)->right))
+		    && (tree->right && !((tree->right)->left) && !((tree->right)->right)))
+			return (1);
 
-	height = binary_tree_height(tree);
-	total_nodes = binary_tree_nodes(tree);
+		if (tree && tree->left && tree->right)
+			return (binary_tree_is_perfect(tree->left) &&
+				binary_tree_is_perfect(tree->right));
+	}
 
-	for (i = 0; i < height; i++)
-		pow2 *= 2;
-
-	return (pow2 - 1 == (int)total_nodes);
+	return (0);
 }
 
 /**
- * binary_tree_complete_insert - recursively proceeds through a `heap_t`
- * binary tree to add a new leaf in level order, while keeping tree complete
- * @tree: root node of tree to traverse
- * @value: value to store in the new node
- * Return: pointer to the new node, or NULL on failure
+ * swap - swaps nodes when child is greater than parent
+ *
+ * @arg_node: parent node
+ * @arg_child: child node
+ * Return: no return
  */
-heap_t *binary_tree_complete_insert(heap_t *tree, int value)
+void swap(heap_t **arg_node, heap_t **arg_child)
 {
-	heap_t *new = NULL;
+	heap_t *node, *child, *node_child, *node_left, *node_right, *parent;
+	int left_right;
 
-	if (tree->left && tree->right)
+	node = *arg_node, child = *arg_child;
+	if (child->n > node->n)
 	{
-		if (!binary_tree_is_perfect(tree) &&
-		    binary_tree_is_perfect(tree->left))
-			new = binary_tree_complete_insert(tree->right, value);
+		if (child->left)
+			child->left->parent = node;
+		if (child->right)
+			child->right->parent = node;
+		if (node->left == child)
+			node_child = node->right, left_right = 0;
 		else
-			new = binary_tree_complete_insert(tree->left, value);
-	}
-	else
-	{
-		new = binary_tree_node(tree, value);
-		if (!new)
-			return (NULL);
-
-		if (!(tree->left))
-			tree->left = new;
+			node_child = node->left, left_right = 1;
+		node_left = child->left, node_right = child->right;
+		if (left_right == 0)
+		{
+			child->right = node_child;
+			if (node_child)
+				node_child->parent = child;
+			child->left = node;
+		}
 		else
-			tree->right = new;
+		{
+			child->left = node_child;
+			if (node_child)
+				node_child->parent = child;
+			child->right = node;
+		}
+		if (node->parent)
+		{
+			if (node->parent->left == node)
+				node->parent->left = child;
+			else
+				node->parent->right = child;
+		}
+		parent = node->parent, child->parent = parent;
+		node->parent = child, node->left = node_left;
+		node->right = node_right, *arg_node = child;
 	}
-
-	return (new);
 }
 
-
 /**
- * heap_insert - inserts a value into a max binary heap
- * @root: double pointer to the root node of the Heap
- * @value: value to store in the node to be inserted
- * Return: pointer to the inserted node, or NULL on failure
+ * heap_insert - function that inserts a value in Max Binary Heap
+ * @value: value to be inserted
+ * @root: tree root
+ * Return: pointer to the created node, or NULL on failure.
  */
 heap_t *heap_insert(heap_t **root, int value)
 {
-	heap_t *new = NULL, *temp = NULL;
-	int swap;
+	heap_t *new_node;
 
-	/* no root, start new tree */
-	if (!(*root))
+	if (*root == NULL)
 	{
-		new = binary_tree_node(NULL, value);
-		if (!new)
-			return (NULL);
-		*root = new;
-		return (new);
+		*root = binary_tree_node(NULL, value);
+		return (*root);
 	}
 
-	/* find next available leaf position in level order */
-	new = binary_tree_complete_insert(*root, value);
-	if (!new)
-		return (NULL);
-
-	/* now sort new value into position in heap by value of new->n */
-	temp = new;
-	while (temp && temp->parent && temp->n > temp->parent->n)
+	if (binary_tree_is_perfect(*root) || !binary_tree_is_perfect((*root)->left))
 	{
-		swap = temp->n;
-		temp->n = temp->parent->n;
-		temp->parent->n = swap;
-		temp = temp->parent;
+		if ((*root)->left)
+		{
+			new_node = heap_insert(&((*root)->left), value);
+			swap(root, &((*root)->left));
+			return (new_node);
+		}
+		else
+		{
+			new_node = (*root)->left = binary_tree_node(*root, value);
+			swap(root, &((*root)->left));
+			return (new_node);
+		}
 	}
 
-	return (temp);
+	if ((*root)->right)
+	{
+		new_node = heap_insert(&((*root)->right), value);
+		swap(root, (&(*root)->right));
+		return (new_node);
+	}
+	else
+	{
+		new_node = (*root)->right = binary_tree_node(*root, value);
+		swap(root, &((*root)->right));
+		return (new_node);
+	}
+
+	return (NULL);
 }
